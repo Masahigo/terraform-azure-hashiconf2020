@@ -62,3 +62,13 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZ_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ env.subscription_id }}
           ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      - name: 'Terraform Apply using custom action'
+        uses: ./.github/actions/terraform-azcli
+        with:
+          variables: subscription_id=${{ env.subscription_id }},prefix=masim-az-tf-challenge-2020
+          path: ${{ env.tf_working_dir }}
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets. AZ_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ env.subscription_id }}
+          ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
