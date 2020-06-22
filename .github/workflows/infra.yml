@@ -1,15 +1,18 @@
 # Basic idea gotten from here: https://github.com/hashicorp/terraform-github-actions
 
-name: Infra CI
+name: Infra
 
 on:
   push:
     branches:
       - '**' 
+    paths:
+    - 'challenges/challenge1/terraform/**'
 env:
     tf_version: '0.12.26'
     tf_working_dir: 'challenges/challenge1/terraform'
     subscription_id: '16746c1e-ff8d-4f88-a96f-faa5e7903eda'
+    prefix: 'masim-az-tf-challenge-2020'
 jobs:
   terraform:
     name: 'Terraform'
@@ -46,6 +49,7 @@ jobs:
           tf_actions_subcommand: 'validate'
           tf_actions_working_dir: ${{ env.tf_working_dir }}
           tf_actions_comment: false
+          args: '-var="subscription_id=${{ env.subscription_id }}" -var="prefix=${{ env.prefix }}"'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Terraform Plan'
@@ -55,7 +59,7 @@ jobs:
           tf_actions_subcommand: 'plan'
           tf_actions_working_dir: ${{ env.tf_working_dir }}
           tf_actions_comment: false
-          args: '-var="subscription_id=${{ env.subscription_id }}"'
+          args: '-var="subscription_id=${{ env.subscription_id }}" -var="prefix=${{ env.prefix }}"'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
@@ -65,10 +69,10 @@ jobs:
       - name: 'Terraform Apply using custom action'
         uses: ./.github/actions/terraform-azcli
         with:
-          variables: subscription_id=${{ env.subscription_id }},prefix=masim-az-tf-challenge-2020
+          variables: subscription_id=${{ env.subscription_id }},prefix=${{ env.prefix }}
           path: ${{ env.tf_working_dir }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets. AZ_CLIENT_SECRET }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZ_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ env.subscription_id }}
           ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}

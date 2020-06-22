@@ -53,3 +53,18 @@ resource "azurerm_app_service" "main" {
     "Personalizer__Endpoint"       = ""
   }
 }
+
+resource "null_resource" "appserviceci" {
+  triggers = {
+    version = "0.0.1"
+  }
+
+  provisioner "local-exec" {
+    command     = "./bin/appservice-ci.sh ${azurerm_resource_group.main.name} ${azurerm_app_service.main.name}"
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [
+    azurerm_app_service.main
+  ]
+}
