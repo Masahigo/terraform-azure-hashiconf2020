@@ -5,7 +5,7 @@ name: Infra
 on:
   push:
     branches:
-      - '**' 
+      - 'feature/frontend-cd'
     paths:
     - 'challenges/challenge1/terraform/**'
 env:
