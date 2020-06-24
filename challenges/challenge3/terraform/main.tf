@@ -134,7 +134,6 @@ resource "azurerm_container_group" "main" {
     environment_variables = {
       MONGO_INITDB_ROOT_USERNAME = var.mongodb_login_name
       MONGO_INITDB_ROOT_PASSWORD = random_password.mongodbpassword.result
-      MONGO_INITDB_DATABASE      = var.database_name
     }
 
     commands = ["mongod", "--dbpath=/data/mongoaz", "--bind_ip_all", "--auth"]

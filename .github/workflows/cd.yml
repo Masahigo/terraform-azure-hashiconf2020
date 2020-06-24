@@ -1,0 +1,64 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+    - 'challenges/challenge3/terraform/**'
+    tags: 
+      - '*'
+env:
+    tf_version: '0.12.26'
+    tf_working_dir: 'challenges/challenge3/terraform'
+    subscription_id: '16746c1e-ff8d-4f88-a96f-faa5e7903eda'
+    prefix: 'masim-az-tf-challenge-2020'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  provision-infra:
+    name: 'Provision infra using Terraform'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Terraform Init'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.tf_version }}
+          tf_actions_subcommand: 'init'
+          tf_actions_working_dir: ${{ env.tf_working_dir }}
+          tf_actions_comment: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets. AZ_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ env.subscription_id }}
+          ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      - name: 'Terraform Plan'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.tf_version }}
+          tf_actions_subcommand: 'plan'
+          tf_actions_working_dir: ${{ env.tf_working_dir }}
+          tf_actions_comment: false
+          args: '-var="subscription_id=${{ env.subscription_id }}" -var="prefix=${{ env.prefix }}"'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets. AZ_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ env.subscription_id }}
+          ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      - name: 'Terraform Apply'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.tf_version }}
+          tf_actions_subcommand: 'apply'
+          tf_actions_working_dir: ${{ env.tf_working_dir }}
+          tf_actions_comment: false
+          args: '-var="subscription_id=${{ env.subscription_id }}" -var="prefix=${{ env.prefix }}" -auto-approve'
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets. AZ_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ env.subscription_id }}
+          ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
