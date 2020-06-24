@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
-    resource_group_name   = "masim-az-coding-challenge-2020-tf-state-rg"
-    storage_account_name  = "azcodetfstatewestor"
-    container_name        = "tfstate"
-    key                   = "dev.terraform.tfstate"
+    resource_group_name  = "masim-az-coding-challenge-2020-tf-state-rg"
+    storage_account_name = "azcodetfstatewestor"
+    container_name       = "tfstate"
+    key                  = "dev.terraform.tfstate"
   }
 }
 
@@ -41,8 +41,8 @@ resource "azurerm_app_service" "main" {
   app_service_plan_id = azurerm_app_service_plan.main.id
 
   site_config {
-    always_on         = true
-    scm_type          = "ExternalGit"
+    always_on = true
+    scm_type  = "ExternalGit"
     default_documents = [
       "Default.htm",
       "Default.html",
@@ -52,10 +52,10 @@ resource "azurerm_app_service" "main" {
 
   app_settings = {
     "WEBSITE_NODE_DEFAULT_VERSION" = "10.15.2"
-    "ApiUrl"                       = ""
-    "ApiUrlShoppingCart"           = ""
-    "MongoConnectionString"        = "mongodb://user:${random_password.mongodbpassword.result}@${azurerm_container_group.main.fqdn}:27017"
-    "SqlConnectionString"          = ""
+    "ApiUrl"                       = "/api/v1"
+    "ApiUrlShoppingCart"           = "/api/v1"
+    "MongoConnectionString"        = "mongodb://${var.mongodb_login_name}:${random_password.mongodbpassword.result}@${azurerm_container_group.main.fqdn}:27017"
+    "SqlConnectionString"          = "Server=tcp:${azurerm_sql_server.sql_server.fully_qualified_domain_name},1433;Initial Catalog=${var.database_name};Persist Security Info=False;User ID=${var.admin_login_name};Password=${random_password.azuresqlpassword.result};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
     "productImagesUrl"             = "https://raw.githubusercontent.com/microsoft/TailwindTraders-Backend/master/Deploy/tailwindtraders-images/product-detail"
     "Personalizer__ApiKey"         = ""
     "Personalizer__Endpoint"       = ""
@@ -77,9 +77,15 @@ resource "null_resource" "appserviceci" {
 }
 
 resource "random_password" "mongodbpassword" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
+}
+
+resource "random_password" "azuresqlpassword" {
+  length           = 32
+  special          = true
+  override_special = "/@\" "
 }
 
 resource "azurerm_storage_account" "main" {
@@ -105,10 +111,10 @@ resource "azurerm_container_group" "main" {
   os_type             = "linux"
 
   container {
-    name     = "mongo"
-    image    = "mongo"
-    cpu      = "1"
-    memory   = "1.5"
+    name   = "mongo"
+    image  = "mongo"
+    cpu    = "1"
+    memory = "1.5"
 
     ports {
       port     = 27017
@@ -126,9 +132,9 @@ resource "azurerm_container_group" "main" {
     }
 
     environment_variables = {
-        MONGO_INITDB_DATABASE = "azure-eats-db"
-        MONGODB_USER          = "user"
-        MONGODB_PASS          = random_password.mongodbpassword.result
+      MONGO_INITDB_ROOT_USERNAME  = var.mongodb_login_name
+      MONGO_INITDB_ROOT_PASSWORD  = random_password.mongodbpassword.result
+      MONGO_INITDB_DATABASE       = var.database_name
     }
 
     commands = ["mongod", "--dbpath=/data/mongoaz", "--bind_ip_all", "--auth"]
@@ -138,4 +144,40 @@ resource "azurerm_container_group" "main" {
     environment = "dev"
   }
 
+}
+
+resource "azurerm_sql_server" "sql_server" {
+  name                         = "${var.prefix}-sql"
+  resource_group_name          = azurerm_resource_group.main.name
+  location                     = azurerm_resource_group.main.location
+  version                      = "12.0"
+  administrator_login          = var.admin_login_name
+  administrator_login_password = random_password.azuresqlpassword.result
+
+  tags = {
+    environment = "dev"
+  }
+}
+
+resource "azurerm_sql_firewall_rule" "sql_firewall" {
+  name                = "AllowAccessToAzure"
+  resource_group_name = azurerm_resource_group.main.name
+  server_name         = azurerm_sql_server.sql_server.name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
+}
+
+resource "azurerm_sql_database" "sql_db" {
+  name                             = var.database_name
+  resource_group_name              = azurerm_resource_group.main.name
+  location                         = azurerm_resource_group.main.location
+  server_name                      = azurerm_sql_server.sql_server.name
+
+  collation                        = var.sql_database_collation
+  edition                          = var.sql_database_edition
+  requested_service_objective_name = var.sql_database_requested_service_objective_name
+
+  tags = {
+    environment = "dev"
+  }
 }

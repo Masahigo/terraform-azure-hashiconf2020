@@ -33,7 +33,7 @@ echo "access_key: $ACCOUNT_KEY"
 export ARM_ACCESS_KEY=$ACCOUNT_KEY
 ```
 
-Add to `main.tf`:
+Configure to `main.tf`:
 
 ```tf
 terraform {
@@ -46,9 +46,17 @@ terraform {
 }
 ```
 
+Configure to `terraform.vars`
+
+```tfvars
+subscription_id = "<your sub id>"
+prefix          = "<your prefix>"
+```
+
 ## Initialize and deploy
 
 ```bash
+cd challenges/challenge2/terraform/
 terraform init
-terraform apply -var 'subscription_id=<your sub id>' -var 'prefix=<your prefix>'
+terraform apply -auto-approve
 ```
