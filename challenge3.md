@@ -1,5 +1,8 @@
 # Solution
 
+![Infra CI](https://github.com/Masahigo/terraform-azure-hashiconf2020/workflows/Infra%20CI/badge.svg)
+![CD](https://github.com/Masahigo/terraform-azure-hashiconf2020/workflows/CD/badge.svg)
+
 ## Enable TF remote state
 
 ```shell
@@ -60,10 +63,19 @@ terraform plan -var 'subscription_id=<your sub id>' -var 'prefix=<your prefix>'
 az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/<your sub id>"
 ```
 
-2) Save credentials to Github repo Secrets
+Save credentials to Github repo Secrets:
 
 - AZ_CLIENT_ID: `<appId>`
 - AZ_CLIENT_SECRET: `<password>`
 - AZ_TENANT_ID: `<tenant>`
 
+## Trigger new deployment (CD pipeline) 
 
+The pipeline is triggered from Git tags:
+
+```bash
+USER=$(git log -1 --pretty=format:'%an')
+TAG=UPDATED-`date +%Y-%m-%d-%H%M`
+git tag -a $TAG -m "$TAG by $USER"
+git push origin $TAG
+```
