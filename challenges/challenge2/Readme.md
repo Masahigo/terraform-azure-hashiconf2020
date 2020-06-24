@@ -1,35 +1,44 @@
-# Challenge 1: hosting a website on Azure
+# Challenge 2: Deploying databases on Azure using Terrform CLI
 
-![Astronaut Badger](../assets/Space-Badger-no-circle-smaller.jpg)
+![Rocket Engine](../assets/Rocket-Engine-Building-400x400.png)
 
-**Watch** our [introduction video]() to learn all about #TerraformOnAzure coding challenge!
+**Watch** our [introduction video](https://aka.ms/tfonazure/vid/day2) to learn all about this #TerraformOnAzure coding challenge!
 
 
 ## Description
 
-In this first challenge, you will have to deploy our [sample ASP.NET Core application](https://github.com/Terraform-On-Azure-Workshop/AzureEats-Website) to [Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/overview?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ). You will have to provision all required Azure resources using [HashiCorp's Terraform](https://www.terraform.io/).
+In this second challenge, you will continue where we left off in the previous challenge and you will host the application databases on Azure. You will have to provision all requireed Azure resources using [HashiCorp's Terraform](https://www.terraform.io/).
 
-We will be running the web application in **frontend-only mode**. This means that you will be hosting the ASP.NET Core application without a database. As a result, only the home page will be operational. In the following coding challenges you will fix this. Check the paragraph on [running the application in frontend-only mode](#Running-the-application-in-frontend-mode) below on how to achieve this.
+The [sample application](https://github.com/Terraform-On-Azure-Workshop/AzureEats-Website) has **2 databases**: the products database and the shopping cart database. You will deploy the products database on [**Azure SQL Database**](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ), a fully managed Platform-as-a-Service database engine. 
 
-There are multiple ways to deploy a web application to Azure App Service. In this coding challenge you will use [continuous deployment](https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ), specifically **continuous deployment from GitHub**. Make sure to first [fork the sample application](https://github.com/Terraform-On-Azure-Workshop/TailwindTraders-Website) to your GitHub account, after which you can then configure continuous deployment from GitHub on your App Service.
+The shopping cart database is a **MongoDB database**, which you will deploy in a container on [**Azure Container Instances**](https://docs.microsoft.com/en-us/azure/container-instances/container-instances-overview?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ) (ACI).
 
-> **TIP:** the GitHub deployment setting for an App Service cannot be configured through Terraform. You will need to use another automated way to configure this.
+> 🔔 **IMPORTANT:** Make sure to pull the latest updates from the [sample application](https://github.com/Terraform-On-Azure-Workshop/AzureEats-Website) to get the latest changes! 🔔
+
 
 ## Success criteria 🏆
 
-To successfully complete this challenge, you will need to write the terraform code and associated scripts needed to deploy the sample application frontend on Azure App Service using GitHub deployment.
+To successfully complete this challenge, you will have to:
+
+* Use the Terraform CLI to provision the Azure resources to host 1) an Azure SQL database, 2) a MongoDB database on Azure Container Instances.
+* Use the Azure CLI to deploy the sample application from a GitHub repo, using Azure App Service Deployment Center Continuous Deployment (not using GitHub Actions at this time!).
+* Connect the sample application in Azure App Service to both databases, by configuring the App Settings through Terraform configuration.
+
+Spoiler: the [solution](./Solution.md) to this coding challenge is now available.
+
 
 ## How to submit your solution?
 
 Within 24 hours of making the coding challenge public, submit your solution as a custom ISSUE to this GitHub repository.
 
- 1. Create your own Github repo containing your solution for that challenge.
- 2. Create a [Challenge Solution Submission ISSUE](https://github.com/Terraform-On-Azure-Workshop/terraform-azure-hashiconf2020/issues/new/choose) in our repo and fill all the details.
+ 1. Create your own Github repo with your solution for that challenge.
+ 2. Create a new [Challenge Solution Submission issue](https://github.com/Terraform-On-Azure-Workshop/terraform-azure-hashiconf2020/issues/new/choose) in our repo for each challenge and fill all the details.
  3. Submit the issue.
+
 
 ## Prerequisites
 
-- An Azure subscription, where you have permissions to create resource groups. You can get an [Azure free account](https://azure.microsoft.com/en-us/free/?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ) or send us a DM us [on Twitter](https://twitter.com/msdev_nl) and we'll provide you with an Azure Pass.
+- An Azure subscription, where you have permissions to create resource groups. You can get an [Azure free account](https://azure.microsoft.com/en-us/free/) or send us a DM us [on Twitter](https://twitter.com/msdev_nl) and we'll provide you with an Azure Pass.
 - A [GitHub account](https://github.com/), allowing you to create a custom issue to submit your solution. 
 - Fork the [sample application](https://github.com/Terraform-On-Azure-Workshop/AzureEats-Website) to your GitHub account.
 
@@ -37,26 +46,26 @@ Within 24 hours of making the coding challenge public, submit your solution as a
 
 There are different ways to get started with Terraform. The easiest is to use the [Azure Cloud shell](https://docs.microsoft.com/en-us/azure/developer/terraform/getting-started-cloud-shell?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ). Alternatively, you can [install Terraform](https://learn.hashicorp.com/terraform/getting-started/install#install-terraform) on your local machine.
 
-
 ## Running the application in frontend mode
 
-To run the application in frontend mode, you need to [configure a number of application settings](https://docs.microsoft.com/en-us/azure/app-service/configure-common?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ). These need to specified on the Azure App Service.
+To connect to the application databases, you will need to configure both database connection strings in the [application settings](https://docs.microsoft.com/en-us/azure/app-service/configure-common?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ). These need to specified on the Azure App Service.
 
 | Setting | Value |
 | :------ | :---- |
 | WEBSITE_NODE_DEFAULT_VERSION | 10.15.2 |
-| ApiUrl                       |  |
-| ApiUrlShoppingCart           |  |
-| MongoConnectionString        |  |
-| SqlConnectionString          |  |
-| productImagesUrl             | https://raw.githubusercontent.com/microsoft/TailwindTraders-Backend/master/Deploy/tailwindtraders-images/product-detail |
+| ApiUrl                       | /api/v1 |
+| ApiUrlShoppingCart           | /api/v1 |
+| **MongoConnectionString**    | <your MongoDB connection string> |
+| **SqlConnectionString**      | <your Azure SQL connection string> |
+| productImagesUrl             | https://raw.githubusercontent.com/suuus/TailwindTraders-Backend/master/Deploy/tailwindtraders-images/product-detail |
 | Personalizer__ApiKey         |  |
 | Personalizer__Endpoint       |  |
 
 
 ## Resources/Tools Used 🚀
 
-A simple App Service and Terraform script should do it for this challenge. Here's a [tutorial](https://docs.microsoft.com/en-us/azure/developer/terraform/provision-infrastructure-using-azure-deployment-slots?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ) on how to get started.
+A simple App Service and Terraform script should do it for this challenge. Here's a [tutorial](https://docs.microsoft.com/en-us/azure/developer/terraform/provision-infrastructure-using-azure-deployment-slots
+) on how to get started.
 
 * [Azure Cloud Shell](https://shell.azure.com?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
 * [Visual Studio Code](https://code.visualstudio.com?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
@@ -64,11 +73,11 @@ A simple App Service and Terraform script should do it for this challenge. Here'
 
 ## More Resources
 
-* ✅ [Using Terraform with Azure documentation](https://docs.microsoft.com/en-us/azure/developer/terraform/overview?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
-* ✅ [AzureRM provider App Service documentation](https://www.terraform.io/docs/providers/azurerm/r/app_service.html?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
+* ✅ [Terraform AzureRM Azure SQL provider documentation](https://www.terraform.io/docs/providers/azurerm/r/sql_database.html)
 * ✅ [Azure App Service documentation](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
-* ✅ [Continuous deployment on Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
-* ✅ [Web App deployment using the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
+* ✅ [Azure SQL Database documentation](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
+* ✅ [Azure Container Instances documentation](https://docs.microsoft.com/en-us/azure/container-instances/container-instances-overview?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ)
+* ✅ [Hosting MongoDB on Azure Container Instances](https://jussiroine.com/2019/02/an-adventure-in-containers-and-command-line-tools-running-mongodb-in-azure/)
 
 
 ## Questions? Comments? 🙋‍♀️
@@ -79,4 +88,4 @@ Make sure to mention which challenge is problematic. We'll get back to you soon!
 
 ## I don't have an Azure subscription! 🆘
 
-If you don't have an Azure subscription yet, you can DM us [on Twitter](https://twitter.com/msdev_nl) and we'll provide you with a 30-day Azure subscription! Alternatively, you can also [sign up](https://azure.microsoft.com/en-us/free/) for an Azure free account.
+If you don't have an Azure subscription yet, you can DM us [on Twitter](https://twitter.com/msdev_nl) and we'll provide you with a 30-day Azure subscription! Alternatively, you can also [sign up](https://azure.microsoft.com/en-us/free/?ocid=aid3015373_ThankYou_DevComm&eventId=HashiConfTerraformonAzure_JK1-K2-hoArJ) for an Azure free account.

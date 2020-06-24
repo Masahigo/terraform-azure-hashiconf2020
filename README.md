@@ -4,7 +4,13 @@ Our [Azure Heroes](https://aka.ms/azure.heroes?ocid=aid3015373_ThankYou_DevComm&
 
 *Are you ready to show off your Terraform and Azure skills to send our astronaut badger into space?*
 
-**Watch** our [introduction video]() to learn all about it!
+**Click** on the [introduction video](https://aka.ms/tfonazure/vid/day1) below to learn all about it!
+
+<a href="https://aka.ms/tfonazure/vid/day3" target=blank>
+<img src='https://img.youtube.com/vi/V6SkF1EpOOc/hqdefault.jpg' />
+</a>
+
+Coding Challenge 3 is now available for you to work on!
 
 
 ## How does it work? 🧰
@@ -18,20 +24,20 @@ Join, and claim your exclusive space-themed gift 🎁!
 
 ## Challenges 💻
 
-| Date | Challenge | Description |
-| ---- | --------- | ----------- |
-| June 22, 2020 | [Challenge 1](./challenges/challenge1/Readme.md) | Hosting a website on Azure App Service |
-| June 23, 2020 | TBA | TBA |
-| June 24, 2020 | TBA | TBA |
-| June 25, 2020 | TBA | TBA |
-| June 26, 2020 | TBA | TBA |
+| Date | Challenge | Description | Video | Solution |
+| ---- | --------- | ----------- | ----- | -------- |
+| June 22, 2020 | [Challenge 1](./challenges/challenge1/Readme.md) | Deploying an Azure App Service using Terraform CLI and the Azure CLI |[day1](https://aka.ms/tfonazure/vid/day1) | [Solution](./challenges/challenge1/Solution.md) |
+| June 23, 2020 | [Challenge 2](./challenges/challenge2/Readme.md) | Deploying databases on Azure using Terraform CLI | [day2](https://aka.ms/tfonazure/vid/day2) |[Solution](./challenges/challenge2/Solution.md) |
+| June 24, 2020 | [Challenge 3](./challenges/challenge3/Readme.md) | Remote state and CI/CD with GitHub Actions | [day3](https://aka.ms/tfonazure/vid/day3) | TBA |
+| June 25, 2020 | TBA | TBA | TBA | TBA |
+| June 26, 2020 | TBA | TBA | TBA | TBA |
 
 
 ## Submit your solutions? 🔥
 
 You can find the detailed instructions in our [Contributing.md](Contributing.md) guidelines, but here's the TL;DR.
 
-* Submit your solution as a [Challenge Solution Submission ISSUE](https://github.com/Terraform-On-Azure-Workshop/terraform-azure-hashiconf2020/issues/new/choose) to this GitHub repository.
+* Submit your solution as a new [Challenge Solution Submission ISSUE](https://github.com/Terraform-On-Azure-Workshop/terraform-azure-hashiconf2020/issues/new/choose) for each challenge to this GitHub repository.
 
 We'd love it if you also **share your experience on social media**! You can use the **#TerraformOnAzure** Twitter hashtag to do so.
 
